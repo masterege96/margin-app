@@ -1,0 +1,12 @@
+{
+  "name": "margin-app-db-tests",
+  "private": true,
+  "type": "module",
+  "description": "Applies the Supabase migrations to an in-memory Postgres and runs the isolation test.",
+  "scripts": {
+    "test": "node run.mjs"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.11"
+  }
+}
