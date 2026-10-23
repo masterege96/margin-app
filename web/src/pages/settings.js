@@ -1,0 +1,18 @@
+import { header } from '../components.js';
+import { esc } from '../format.js';
+import { icon } from '../icons.js';
+import { hasSample, state } from '../state.js';
+
+export function settingsPage() {
+  const sampleCount = state.jobs.filter((j) => j.is_sample).length;
+  const sampleAction = hasSample()
+    ? `<button class="button button-danger" type="button" data-action="clear-sample">${icon('trash', 14)} Remove ${sampleCount} sample jobs</button>`
+    : `<button class="button button-ghost" type="button" data-action="load-sample">${icon('sparkles', 14)} Load sample data</button>`;
+  return (
+    header('Pilot configuration', 'Workspace & data', 'Where your records live, how margins are calculated, and what can be exported.') +
+    `<div class="settings-grid"><section class="panel settings-panel"><div class="settings-top"><span class="settings-icon">${icon('server', 18)}</span><div><h3 class="panel-title">Storage & access</h3><span class="label-mini">SUPABASE · EU (IRELAND)</span></div></div><p>Records are stored in Postgres with row-level security: only members of <b>${esc(state.workspace?.name)}</b> can read or change them, and every change is written to an append-only audit log.</p><div class="field-notes">Signed in as <b>${esc(state.user?.email)}</b><br>All amounts are USD, stored to the micro-dollar.</div><div class="settings-action"><button class="button button-ghost" data-action="export-jobs">${icon('download')} Jobs CSV</button><button class="button button-ghost" data-action="export-costs">${icon('download')} Costs CSV</button><button class="button button-ghost" data-action="export-json">${icon('download')} Backup JSON</button></div></section>` +
+    `<section class="panel settings-panel"><div class="settings-top"><span class="settings-icon">${icon('shield', 18)}</span><div><h3 class="panel-title">Accounting rules</h3><span class="label-mini">VERIFIABLE CALCULATIONS</span></div></div><ul class="bullet-rows"><li>Billed revenue is not the same as collected cash.</li><li>Contribution = billed revenue − confirmed direct costs.</li><li>Estimated expenses appear separately until confirmed.</li><li>Review and developer time = minutes / 60 × hourly rate.</li><li>Retries are added to the same job, not treated as new revenue.</li><li>Fixed overhead, tax, refunds, and net profit are out of scope.</li></ul></section>` +
+    `<section class="panel settings-panel"><div class="settings-top"><span class="settings-icon">${icon('sparkles', 18)}</span><div><h3 class="panel-title">OpenAI usage ingestion</h3><span class="label-mini">PLANNED · PHASE 1</span></div></div><p>Your pipelines will send each OpenAI call's request ID, token counts and job to an ingestion endpoint with a workspace key. Each event lands as an <b>estimated</b> cost until reconciled with the provider invoice, and the same request is never counted twice.</p><div class="field-notes">Prompts, responses and provider API keys are never stored.</div></section>` +
+    `<section class="panel settings-panel"><div class="settings-top"><span class="settings-icon" style="color:#c77858;background:#fff1e9">${icon('rotate', 18)}</span><div><h3 class="panel-title">Sample data</h3><span class="label-mini">FICTIONAL RECORDS</span></div></div><p>${hasSample() ? `This workspace holds ${sampleCount} fictional sample jobs. Removing them deletes only those jobs and their costs; your own records stay.` : 'Load 13 fictional jobs with their costs to explore the dashboard. They are flagged as samples and never count toward pilot readiness.'}</p><div class="settings-action">${sampleAction}</div></section></div>`
+  );
+}
